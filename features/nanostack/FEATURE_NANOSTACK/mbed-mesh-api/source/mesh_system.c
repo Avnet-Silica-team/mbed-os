@@ -31,7 +31,11 @@
 
 /* Heap for NanoStack */
 #if !MBED_CONF_MBED_MESH_API_USE_MALLOC_FOR_HEAP
+#ifdef __UVISION_VERSION
+static uint8_t app_stack_heap[MBED_CONF_MBED_MESH_API_HEAP_SIZE + 1] __attribute__((at(0x10000188)));
+#else
 static uint8_t app_stack_heap[MBED_CONF_MBED_MESH_API_HEAP_SIZE + 1] __attribute__(( section( "mesh_heap") ));
+#endif
 #else
 static uint8_t *app_stack_heap;
 #endif
