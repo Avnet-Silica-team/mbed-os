@@ -6,9 +6,6 @@
   #define MBED_APP_SIZE 1024k
 #endif
 
-STACK_SIZE = 0x400;
-HEAP_SIZE = 0x7800;
-
 /* Linker script to configure memory regions. */
 MEMORY
 { 
@@ -89,11 +86,6 @@ SECTIONS
     __etext = .;
     _sidata = .;
 
-    .mesh_heap (COPY):
-    {
-        *(mesh_heap*)
-    } > SRAM2
-
     .data : AT (__etext)
     {
         __data_start__ = .;
@@ -140,13 +132,13 @@ SECTIONS
         . = ALIGN(4);
         __bss_end__ = .;
         _ebss = .;
-    } > SRAM1
+    } > SRAM2
 
     .heap (COPY):
     {
         __end__ = .;
         end = __end__;
-        . += HEAP_SIZE;
+        *(.heap*)
         __HeapLimit = .;
     } > SRAM1
 
@@ -162,7 +154,7 @@ SECTIONS
      * size of stack_dummy section */
     __StackTop = ORIGIN(SRAM1) + LENGTH(SRAM1);
     _estack = __StackTop;
-    __StackLimit = __StackTop - STACK_SIZE;
+    __StackLimit = __StackTop - SIZEOF(.stack_dummy);
     PROVIDE(__stack = __StackTop);
 
     /* Check if data + heap + stack exceeds RAM limit */
